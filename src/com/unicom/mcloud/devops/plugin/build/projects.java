@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
+
 
 public class projects implements IObjectActionDelegate{
 	public void setActivePart(IAction arg0, IWorkbenchPart arg1) {
@@ -40,9 +40,11 @@ public class projects implements IObjectActionDelegate{
 		okButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e)  {
 				String url = Login.host + "/projects";
-				String params = "";
+				
+				//String params = "";
 
-
+				JSONObject params = new JSONObject();
+				
 					Map<String, Object> result = request.request(url,params);
 
 					System.out.println(result.get("response").toString());

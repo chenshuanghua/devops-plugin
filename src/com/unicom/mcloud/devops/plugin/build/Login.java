@@ -20,8 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public class Login implements IObjectActionDelegate {
 
@@ -67,33 +66,40 @@ public class Login implements IObjectActionDelegate {
 
 		// 输入后单击确定后的操作
 		okButton.addSelectionListener(new SelectionAdapter() {
+			@SuppressWarnings("unchecked")
 			public void widgetSelected(SelectionEvent e)  {
 
 				String password = byte2hex(getMD5(passNumber.getText().getBytes()));
 
-				String params = "";
 				String url = host + "/tenant/login";
 
+				/*String params = "";
 				params=params+"{";
 				params=params+"\"account\":"+"\""+nameText.getText()+"\",";
 				params=params+"\"password\":"+"\""+password+"\",";
 				params=params+"\"verificaCode\":"+"\""+"qweasd"+"\"";
-				params=params+"}";
+				params=params+"}";*/
+				
+				JSONObject params = new JSONObject();
+				
+				params.put("account", nameText.getText());
+				params.put("password", password);
+				params.put("verificaCode", "qweasd");
 
 					Map<String, Object> result = request.request(url, params);
 
-					System.out.println(result.get("response").toString());
+					System.out.println("################"+result.get("response").toString());
+										
+					JSONObject response = new JSONObject((Map<String, Object>) result.get("response"));					
 					
-					Object succesResponse = JSON.parse(result.get("response"));
+					System.out.println("################"+response.toString());
 					
-					HashMap<String , String> map = (HashMap<String, String>)succesResponse;
-					
-					
-					
-					if(map.get("code")==200) {
-						
+					if((int)response.get("code") == 200) {
+						MessageDialog.openInformation(shell, "Hello", "登陆成功！");
+					}else {
+						MessageDialog.openInformation(shell, "Hello", (String)response.get("message"));
 					}
-					MessageDialog.openInformation(shell, "Hello", (String) result.get("response"));
+					
 			}
 		}
 

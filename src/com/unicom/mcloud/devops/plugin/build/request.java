@@ -10,11 +10,11 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 public class request {
 	
-	public static Map<String, Object> request(String url, String parameters) {  
+	public static Map<String, Object> request(String url, JSONObject parameters) {  
         Map<String, Object> result = new HashMap<String, Object>();  
         String errorStr = "";  
         String status = "";  
@@ -45,7 +45,7 @@ public class request {
             // 获取URLConnection对象对应的输出流  
             out = new OutputStreamWriter(httpUrlConnection.getOutputStream(), "UTF-8");  
             // 发送请求参数  
-            out.append(parameters);  
+            out.append(parameters.toString());  
             // flush输出流的缓冲  
             out.flush();  
   
