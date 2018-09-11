@@ -51,28 +51,22 @@ public class CreatBuild extends JDialog implements IObjectActionDelegate{
 		setForeground(SystemColor.textHighlight);
 				
 		String tagListUrl = Comm.tagListUrl(repoId);
-		//String imageUrl = Comm.imageListUrl();
+		String imageUrl = Comm.imageListUrl();
 		String tagListResult = Request.getRequest(tagListUrl).get("response").toString();
-		//String imageListResult = Request.getRequest(imageUrl).get("response").toString();
+		String imageListResult = Request.getRequest(imageUrl).get("response").toString();
 		JSONArray tagList = new JSONObject(tagListResult).getJSONArray("data");
-		//JSONArray imageList = new JSONObject(imageListResult).getJSONArray("data");
+		JSONArray imageList = new JSONObject(imageListResult).getJSONArray("data");
+		//System.out.println(">>>>>>imageList:"+imageList.toString());
 		
 		String [] tag  = Comm.jsonArrayToString(tagList, "name");
 		
-		//JSONObject [] image = Comm.jsonArrayToString(imageList);
-		//String baseImageUrl = (String)image[1].get("imageRepoUrl")+"/"+(String)image[1].get("groupPath");
+		String[] imageRepoUrl = Comm.jsonArrayToString(imageList, "imageRepoUrl");
+		String[] groupPath = Comm.jsonArrayToString(imageList, "groupPath");
+		String baseImageUrl = imageRepoUrl[1]+"/"+groupPath[1];
+		//System.out.println(">>>>>>baseImageUrl:"+baseImageUrl);
 		
-		/*String [] baseImageList = null;
-		 * baseImageList[0] = "请选择";
-		for(int i=0;i<image.length;i++) {
-			JSONArray imageTags = new JSONObject(image[i]).getJSONArray("imageTags");
-			String[] imageTag = Comm.jsonArrayToString(imageTags, "tag");
-			for(int j=0;j<imageTag.length;j++) {
-				baseImageList[i+j+1] = (String)image[i].get("imageName")+":"+imageTag[j];
-			}
-		}*/
-		
-		//FontClass.loadIndyFont();
+		//获取并生成基础镜像列表  comboBox_1  
+		String[] baseImageList = Comm.baseImageList(imageList);
 		
 		setTitle("Creat a new Build");
 		setBounds(100, 100, 450, 400);
@@ -158,8 +152,8 @@ public class CreatBuild extends JDialog implements IObjectActionDelegate{
 		comboBox_1.setBackground(Color.WHITE);
 		comboBox_1.setBounds(219, 22, 185, 21);
 		panel_3.add(comboBox_1);
-		comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"请选择","jdk:8-springboot", "tomcat:8.5.31-jdk8", "tomcat:9.0.8-jdk8", "nginx:1.14.0-alpine"}));
-		//comboBox_1.setModel(new DefaultComboBoxModel(baseImageList));
+		//comboBox_1.setModel(new DefaultComboBoxModel(new String[] {"请选择","jdk:8-springboot", "tomcat:8.5.31-jdk8", "tomcat:9.0.8-jdk8", "nginx:1.14.0-alpine"}));
+		comboBox_1.setModel(new DefaultComboBoxModel(baseImageList));
 		
 		JRadioButton rdbtnAddBaseImage = new JRadioButton("Add base image to project");
 		rdbtnAddBaseImage.setSelected(true);
@@ -191,19 +185,19 @@ public class CreatBuild extends JDialog implements IObjectActionDelegate{
 				}else if(baseImage==null||"请选择".equals(baseImage)) {
 					JOptionPane.showMessageDialog(null, "Please choose the baseImage!");
 				}else {
-					/*String definitionParams = "["
-							+ "{\"stageId\":\"1\",\"stageName\":\"git-pull\",\"order\":1,\"codeRepoId\":\""+ repoId+ "\",\"branch\":\""+branch+ "\"},"
-							+ "{\"stageId\":\"2\",\"stageName\":\"maven-exec\",\"order\":2,\"goals\":[\"package\",\"deploy\"],\"isExecJunit\":true},"
-							+ "{\"stageId\":\"3\",\"stageName\":\"sonarqube\",\"order\":3,\"isExecSonarQube\":true},"
-							+ "{\"stageId\":\"4\",\"stageName\":\"docker-build-baseimage\",\"order\":4,\"baseImage\":\""+ baseImageUrl+ "/"+baseImage+"\",\"tag\":\""+branch+"\"}"
-							+ "]";*/
-					
 					String definitionParams = "["
 							+ "{\"stageId\":\"1\",\"stageName\":\"git-pull\",\"order\":1,\"codeRepoId\":\""+ repoId+ "\",\"branch\":\""+branch+ "\"},"
 							+ "{\"stageId\":\"2\",\"stageName\":\"maven-exec\",\"order\":2,\"goals\":[\"package\",\"deploy\"],\"isExecJunit\":true},"
 							+ "{\"stageId\":\"3\",\"stageName\":\"sonarqube\",\"order\":3,\"isExecSonarQube\":true},"
-							+ "{\"stageId\":\"4\",\"stageName\":\"docker-build-baseimage\",\"order\":4,\"baseImage\":\"10.124.133.191/devops/"+baseImage+"\",\"tag\":\""+branch+"\"}"
+							+ "{\"stageId\":\"4\",\"stageName\":\"docker-build-baseimage\",\"order\":4,\"baseImage\":\""+ baseImageUrl+ "/"+baseImage+"\",\"tag\":\""+branch+"\"}"
 							+ "]";
+					
+					/*String definitionParams = "["
+							+ "{\"stageId\":\"1\",\"stageName\":\"git-pull\",\"order\":1,\"codeRepoId\":\""+ repoId+ "\",\"branch\":\""+branch+ "\"},"
+							+ "{\"stageId\":\"2\",\"stageName\":\"maven-exec\",\"order\":2,\"goals\":[\"package\",\"deploy\"],\"isExecJunit\":true},"
+							+ "{\"stageId\":\"3\",\"stageName\":\"sonarqube\",\"order\":3,\"isExecSonarQube\":true},"
+							+ "{\"stageId\":\"4\",\"stageName\":\"docker-build-baseimage\",\"order\":4,\"baseImage\":\"10.124.133.191/devops/"+baseImage+"\",\"tag\":\""+branch+"\"}"
+							+ "]";*/
 									
 					buildDefinition.setProjectId(projectId);
 					buildDefinition.setCodeRepoId(repoId);
@@ -217,7 +211,7 @@ public class CreatBuild extends JDialog implements IObjectActionDelegate{
 					try {
 						response = new JSONObject(Request.postRequest(buildUrl,parameters).get("response").toString());
 						if("200".equals(response.get("code"))) {
-							JOptionPane.showMessageDialog(null, "构建定义创建成功！");
+							JOptionPane.showMessageDialog(null, "构建定义创建成功！正在执行，请稍后……");
 							
 							/*setVisible(false);
 							Execute frame = new Execute(projectId);

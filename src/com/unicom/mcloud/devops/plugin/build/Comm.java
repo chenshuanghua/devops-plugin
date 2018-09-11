@@ -1,5 +1,8 @@
 package com.unicom.mcloud.devops.plugin.build;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,8 +32,8 @@ public class Comm {
 	}
 	
 	public static String imageListUrl() {
-		String tagListUrl = host + "/image/images?imageType=BASE_IMAGE";
-		return tagListUrl;
+		String imageListUrl = host + "/image/images?imageType=BASE_IMAGE";
+		return imageListUrl;
 	}
 	
 	public static String buildUrl() {
@@ -93,25 +96,34 @@ public class Comm {
 		return str;
 	}
 	
-	public static JSONObject[] jsonArrayToString(JSONArray object) throws JSONException {
-		JSONObject[] str = new JSONObject[object.length() + 1];
-		for (int i = 0; i < object.length(); i++) {
-			JSONObject project = object.getJSONObject(i);
-			str[i + 1] = project;
-		}
-		return str;
-	}
-	
 	public static String getIdByName(JSONArray object , String objectName ,String keyName ,String keyId) throws JSONException {
-		String repoId = null;
+		String str = null;
 		for (int i = 0; i < object.length(); i++) {
 			JSONObject repo = null;
 				repo = object.getJSONObject(i);
 				if (objectName.equals(repo.get(keyName).toString())) {
-					repoId = repo.get(keyId).toString();				
+					str = repo.get(keyId).toString();				
 			} 
 		}
-		return repoId;
+		return str;
 	}
+	
+	public static String[] baseImageList(JSONArray imageList) throws JSONException {
+		List<String> baseImageArrayList=new ArrayList<String>();
+		baseImageArrayList.add("请选择");
+		for(int i=0;i<imageList.length();i++) {
+			JSONArray imageTags = imageList.getJSONObject(i).getJSONArray("imageTags");
+			//System.out.println(">>>>>>imageTags:"+imageTags.toString());
+			String[] imageTag = Comm.jsonArrayToString(imageTags, "tag");
+			for(int j=1;j<imageTag.length;j++) {
+				baseImageArrayList.add((String)(imageList.getJSONObject(i).get("imageName"))+":"+imageTag[j]);
+				//System.out.println(">>>>>>imageTag["+j+"]:"+imageTag.toString());
+			}
+		}
+		String[] baseImageList = (String[])baseImageArrayList.toArray(new String[baseImageArrayList.size()]);
+		return baseImageList;
+	}
+	
+	
 
 }
