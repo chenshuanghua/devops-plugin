@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin> 
+   
+   <extension point="org.eclipse.ui.popupMenus">
+		<objectContribution id="Clarity.objectContribution"
+	 		objectClass="org.eclipse.core.runtime.IAdaptable">
+         	<menu 
+                label="MCloud"
+                id="MCloud"> 
+            <separator name="conf"> </separator> 
+            </menu> 
+            
+            <action 
+                label="Build"
+                class="com.unicom.mcloud.devops.plugin.build.Build"
+                menubarPath="MCloud/additions"
+                id="cn.com.action.jenkins.Build"> 
+            </action>
+            
+            <action 
+                label="Login"
+                class="com.unicom.mcloud.devops.plugin.build.Login"
+                menubarPath="MCloud/additions"
+                id="cn.com.action.jenkins.Login"> 
+            </action>
+            
+		</objectContribution>
+	</extension>
+	
+
+</plugin>
