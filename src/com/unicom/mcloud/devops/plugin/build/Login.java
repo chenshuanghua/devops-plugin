@@ -113,7 +113,11 @@ public class Login extends JDialog implements IObjectActionDelegate{
 			public void actionPerformed(ActionEvent arg0) {
 				
 				if(!textField_1.getText().isEmpty()) {
-					Comm.host = "http://"+textField_1.getText()+"/api/v1";
+					if(textField_1.getText().indexOf("http://")==-1) {
+						Comm.host = "http://"+textField_1.getText()+"/api/v1";
+					}else {
+						Comm.host = textField_1.getText()+"/api/v1";
+					}
 					//System.out.println(">>>>>>>>IP:"+Comm.host);
 				}
 				
