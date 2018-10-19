@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class Comm {
 	
-	public static String host = "http://10.124.133.190/newAPI";
+	public static String host = "http://10.236.4.212/newAPI";
 	
 	public static String loginUrl() {
 		String loginUrl = host + "/tenant/login";

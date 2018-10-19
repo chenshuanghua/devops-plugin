@@ -20,6 +20,8 @@ import javax.swing.JOptionPane;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.UIManager;
@@ -27,7 +29,11 @@ import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
+import java.awt.Cursor;
+
 import javax.swing.border.TitledBorder;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 @SuppressWarnings("serial")
 public class Login extends JDialog implements IObjectActionDelegate{
@@ -35,13 +41,12 @@ public class Login extends JDialog implements IObjectActionDelegate{
 	private JPanel contentPane;
 	private JTextField textField;
 	private JPasswordField passwordField;
-	private JTextField textField_1;
 
 	
 	/**
 	 * Create the frame.
 	 */
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "unchecked", "rawtypes" })
 	public Login() {
 		
 		FontClass.loadIndyFont();
@@ -73,15 +78,33 @@ public class Login extends JDialog implements IObjectActionDelegate{
 		contentPane.add(panel_1);
 		panel_1.setLayout(null);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(20, 79, 384, 21);
-		panel_1.add(textField_1);
-		textField_1.setBorder(UIManager.getBorder("ProgressBar.border"));
-		textField_1.setColumns(10);
-		
-		JLabel lblNewLabel = new JLabel("<html><body>Enter the IP address and port number. If not, the default is the test environment address.<body></html>");
+		JLabel lblNewLabel = new JLabel("<html><body>Choose the login address<body></html>");
 		lblNewLabel.setBounds(20, 25, 384, 49);
 		panel_1.add(lblNewLabel);
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"production environment", "testing environment","development environment"}));
+		comboBox.setEditable(true);
+		comboBox.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		comboBox.setBorder(new CompoundBorder());
+		comboBox.setBackground(Color.WHITE);
+		comboBox.setBounds(20, 72, 215, 21);
+		panel_1.add(comboBox);
+		
+		comboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (ItemEvent.SELECTED == e.getStateChange()) {
+					String ip = comboBox.getSelectedItem().toString();
+					if(ip.equals("production environment")) {
+						Comm.host = "http://10.236.4.212/newAPI";
+					}else if(ip.equals("testing environment")) {
+						Comm.host = "http://10.124.133.194/newAPI";
+					}else if(ip.equals("development environment")) {
+						Comm.host = "http://10.124.133.190/newAPI";
+					}
+				}
+			}
+		});
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setToolTipText("");
@@ -112,14 +135,14 @@ public class Login extends JDialog implements IObjectActionDelegate{
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if(!textField_1.getText().isEmpty()) {
+				/*if(!textField_1.getText().isEmpty()) {
 					if(textField_1.getText().indexOf("http://")==-1) {
 						Comm.host = "http://"+textField_1.getText()+"/newAPI";
 					}else {
 						Comm.host = textField_1.getText()+"/newAPI";
 					}
 					//System.out.println(">>>>>>>>IP:"+Comm.host);
-				}
+				}*/
 				
 				@SuppressWarnings("deprecation")
 				String password = HashUtil.byte2hex(HashUtil.getMD5(passwordField.getText().getBytes()));
