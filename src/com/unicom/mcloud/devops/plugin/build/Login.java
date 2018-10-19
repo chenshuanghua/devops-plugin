@@ -46,7 +46,7 @@ public class Login extends JDialog implements IObjectActionDelegate{
 	/**
 	 * Create the frame.
 	 */
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "unchecked", "rawtypes" })
 	public Login() {
 		
 		FontClass.loadIndyFont();
@@ -96,11 +96,11 @@ public class Login extends JDialog implements IObjectActionDelegate{
 				if (ItemEvent.SELECTED == e.getStateChange()) {
 					String ip = comboBox.getSelectedItem().toString();
 					if(ip.equals("production environment")) {
-						Comm.host = "http://10.236.4.5:8080/api/v1";
+						Comm.host = "http://10.236.4.212/newAPI";
 					}else if(ip.equals("testing environment")) {
-						Comm.host = "http://10.124.133.194:8080/api/v1";
+						Comm.host = "http://10.124.133.194/newAPI";
 					}else if(ip.equals("development environment")) {
-						Comm.host = "http://10.124.133.190:8080/api/v1";
+						Comm.host = "http://10.124.133.190/newAPI";
 					}
 				}
 			}
